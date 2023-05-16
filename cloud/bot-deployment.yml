@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: elasticsearch
+  labels:
+    app: elasticsearch
+spec:
+  ports:
+  - port: 80
+    name: web
+  clusterIP: None
+  selector:
+    app: by-a-thread-bot-app
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: by-a-thread-bot-deployment
+  namespace: bat-bot
+  labels:
+    app: by-a-thread-bot-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: by-a-thread-bot-app
+  template:
+    metadata:
+      labels:
+        app: by-a-thread-bot-app
+    spec:
+      containers:
+      - name: by-a-thread-bot
+        image: us-west1-docker.pkg.dev/${PROJECT_ID}/by-a-thread-bot/by-a-thread-app:v1
+        imagePullPolicy: Always
+        env:
+        - name: DISCORD_BOT_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: discord-bot-secrets
+              key: discord_bot_token

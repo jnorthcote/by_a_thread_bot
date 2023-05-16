@@ -1,0 +1,6 @@
+{
+    "prefix-key": "%",
+    "db-connect": true,
+    "index-name": "nova_ss",
+    "host-name" : "elasticsearch"
+}

@@ -1,0 +1,32 @@
+version: "3.7"
+
+services:
+    bot: # discord.py bot
+        # working_dir: /usr/src/bot/src
+        container_name: ocr-bot-test
+        restart: 'no'
+        volumes:
+          - './src:/usr/src/bot/src'
+        # command: [ "python", "-m", "unittest", "test.fleet_test"]
+        # command: [ "python", "-m", "unittest", "test.fleet_test.FleetTestUpdate"]
+        # command: [ "python", "-m", "unittest", "test.fleet_test.FleetListTestCase"]
+        command: [ "python", "-m", "unittest", "test.ship_test.ShipTypeTestCase"]
+        # command: [ "python", "-m", "unittest", "test.ship_test.StatsShipNameTestCase"]
+        # command: [ "python", "-m", "unittest", "test.ship_test.ShipLastStatsTestCase"]
+        
+
+
+        # command: [ "python", "-m", "unittest", "test.br_test.BattleReportTestCase"]
+        # command: [ "python", "-m", "unittest", "test.br_test.BattleReportTestTT"]
+
+        # command: [ "python", "-m", "unittest", "test.si_test.ShipInfoTestCase"]
+        # command: [ "python", "-m", "unittest", "test.fs_test.FleetShipsTestCase"]
+
+        # command: [ "python", "-m", "unittest", "test.member_test"]
+        # command: [ "python", "-m", "unittest", "test.member_test.AllianceMemberTestCase"]
+
+        # command: [ "python", "-m", "unittest", "test.script.fleet.ManageFleetsTestCase"]
+        # command: [ "python", "-m", "unittest", "test.script.fleet.TestDeleteTestFleets"]
+        # command: [ "python", "-m", "unittest", "test.script.fleet.TestUpdateStatsFleetNum"]
+
+        # command: [ "python", "-m", "unittest", "test.es.index_test.IndexManage"]

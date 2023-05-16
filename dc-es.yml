@@ -1,0 +1,41 @@
+version: "3.7"
+
+services:
+    elasticsearch: # Elasticsearch Instance
+        container_name: elasticsearch
+        # image: docker.elastic.co/elasticsearch/elasticsearch:8.5.3
+        image: docker.elastic.co/elasticsearch/elasticsearch:7.17.8
+        # image: docker.elastic.co/elasticsearch/elasticsearch:7.5.1
+        volumes: # Persist ES data in seperate "esdata" volume
+            - esdata:/usr/share/elasticsearch/data
+        environment:
+            - bootstrap.memory_lock=true
+            - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
+            - discovery.type=single-node
+            - http.host=0.0.0.0
+            - transport.host=localhost
+            - network.host=0.0.0.0
+        networks:
+            - bot-network
+        expose:
+            - "9200"
+        ports: # Expose Elasticsearch ports
+            - "9200:9200"
+
+    kibana:
+        container_name: ocr-bot-kibana
+        image: docker.elastic.co/kibana/kibana:7.17.8
+        volumes:
+          - ./kibana.yml:/usr/share/kibana/config/kibana.yml
+        networks:
+            - bot-network
+        expose:
+            - "5601"
+        ports: # Expose Elasticsearch ports
+            - "5601:5601"
+
+volumes:
+    esdata:
+
+networks:
+    bot-network:

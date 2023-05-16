@@ -1,0 +1,63 @@
+  git config --global user.email "jason.northcote@gmail.com"
+  git config --global user.name "Jason Northcote"
+
+
+
+export PROJECT_ID=narmb-369710
+export REGION=us-west1
+
+echo $PROJECT_ID
+
+
+export BOT_TOKEN=ZGlzY29yZC1zZWNyZXQudHh0
+kubectl apply -f secrets.yml
+envsubst < secrets.yaml | kubectl apply -f -
+
+envsubst < bot-deployment.yml | kubectl apply -f -
+
+
+gcloud config set project $PROJECT_ID
+
+gcloud artifacts repositories create nova-ocr-bot \
+   --repository-format=docker \
+   --location=us-west1 \
+   --description="Docker repository for bot artifacts"
+
+
+
+   He@thLedg3r
+   git clone https://github.com/jnorthcote/ocr-bot-discord.git
+
+
+   docker build -t REGION-docker.pkg.dev/${PROJECT_ID}/hello-repo/hello-app:v1 .
+
+docker-compose -f dc-bot.yml build && docker-compose -f dc-bot.yml up -d && docker logs -f ocr-bot
+
+docker compose -f dc-bot.yml build .
+
+gcloud artifacts repositories add-iam-policy-binding nova-ocr-bot \
+    --location=us-west1 \
+    --member=serviceAccount:40165470279-compute@developer.gserviceaccount.com \
+    --role="roles/artifactregistry.reader"
+
+gcloud auth configure-docker us-west1-docker.pkg.dev
+
+
+docker push us-west1-docker.pkg.dev/${PROJECT_ID}/nova-ocr-bot/nova-ocr-app:v1
+
+
+gcloud config set compute/region $REGION
+
+
+gcloud container clusters create-auto ocr-bot-cluster
+
+gcloud container clusters get-credentials ocr-bot-cluster --region $REGION
+
+
+kubectl create deployment nova-ocr-app --image=${REGION}-docker.pkg.dev/${PROJECT_ID}/nova-ocr-bot/nova-ocr-app:v1
+
+kubectl scale deployment nova-ocr-app --replicas=3
+
+kubectl autoscale deployment nova-ocr-app --cpu-percent=80 --min=1 --max=5
+
+kubectl get pods

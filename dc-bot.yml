@@ -1,0 +1,28 @@
+version: "3.8"
+
+services:
+    bot: # discord.py bot
+        # image: us-west1-docker.pkg.dev/${PROJECT_ID}/nova-ocr-bot/nova-ocr-app:v1
+        image: by_a_thread_bot-dev:v1
+        container_name: by_a_thread_bot
+        build:
+            context: .
+            dockerfile: ./src/Dockerfile
+            # context: ./src
+            # dockerfile: Dockerfile2
+        # volumes:
+        #     - botdata:/usr/src/bot/sql/
+        restart: always
+        networks:
+            - bot-network
+        # depends_on:
+        #     - elasticsearch
+        # links:
+        #     - elasticsearch
+        environment:
+            GOOGLE_APPLICATION_CREDENTIALS: "./gcloud_keys.json"
+volumes:
+    botdata:
+
+networks:
+    bot-network:

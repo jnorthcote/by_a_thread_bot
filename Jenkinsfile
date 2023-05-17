@@ -1,6 +1,6 @@
 pipeline {
     //agent none
-    agent { label 'kube' }
+    agent { label 'jnlp' }
     stages {
         stage('Example') {
             agent any

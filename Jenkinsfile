@@ -1,6 +1,6 @@
 pipeline {
     //agent none
-    agent { label 'jnlp' }
+    agent { label 'jenkins=slave' }
     stages {
         stage('Example') {
             agent any

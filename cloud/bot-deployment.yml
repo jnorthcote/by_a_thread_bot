@@ -1,16 +1,17 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: elasticsearch
+  name: bat-bot-service
   labels:
-    app: elasticsearch
+    app: bat-bot-app
 spec:
   ports:
   - port: 80
-    name: web
-  clusterIP: None
+    name: bat-bot-web
+    targetPort: bat-bot-svc
+  # clusterIP: None
   selector:
-    app: by-a-thread-bot-app
+    app: bat-bot-app
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -18,24 +19,36 @@ metadata:
   name: by-a-thread-bot-deployment
   namespace: bat-bot
   labels:
-    app: by-a-thread-bot-app
+    app: bat-bot-app
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: by-a-thread-bot-app
+      app: bat-bot-app
   template:
     metadata:
       labels:
-        app: by-a-thread-bot-app
+        app: bat-bot-app
     spec:
       containers:
       - name: by-a-thread-bot
-        image: us-west1-docker.pkg.dev/${PROJECT_ID}/by-a-thread-bot/by-a-thread-app:v1
+        image: us-west1-docker.pkg.dev/${PROJECT_ID}/bat-bot/bat-bot-app:v1
         imagePullPolicy: Always
+        ports:
+        - containerPort: 8400
+          name: bat-bot-svc
+        resources:
+          limits:
+            cpu: 500m
+            ephemeral-storage: 1Gi
+            memory: 2Gi
+          requests:
+            cpu: 500m
+            ephemeral-storage: 1Gi
+            memory: 2Gi
         env:
         - name: DISCORD_BOT_TOKEN
           valueFrom:
             secretKeyRef:
-              name: discord-bot-secrets
+              name: dc-bat-bot-secrets
               key: discord_bot_token

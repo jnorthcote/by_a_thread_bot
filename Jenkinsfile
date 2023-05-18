@@ -63,6 +63,7 @@ spec:
                             sh '''#!/bin/sh
                                 gcloud container clusters get-credentials nova-ocr-bot-cluster --region us-west1
                                 kubectl -n bat-bot get deployment/by-a-thread-bot-deployment -o json
+                                kubectl -n bat-bot set image deployment/by-a-thread-bot-deployment by-a-thread-bot=$IMAGE_PUSH_DESTINATION
                             '''
                         // }
                     // }

@@ -3,31 +3,41 @@ pipeline {
     //agent { label 'jenkins=slave' }
     agent {
         kubernetes {
-            defaultContainer 'docker'
+            defaultContainer 'kaniko'
             yaml '''
 kind: Pod
+metadata:
+  name: kaniko
 spec:
   containers:
-  - name: docker
-    image: docker:24.0.0-dind-alpine3.18
+  - name: kaniko
+    image: gcr.io/kaniko-project/executor:debug-v0.19.0
     imagePullPolicy: Always
     command:
-    - sleep
-    args:
-    - 99d
+    - /busybox/cat
+    tty: true
+"""
 '''
         }
     }
+    environment {
+        PROJECT_ID="narmb-369710"
+        IMAGE_PUSH_DESTINATION="us-west1-docker.pkg.dev/${PROJECT_ID}/bat-bot/bat-bot-app:${BUILD_TAG}"
+    }
     stages {
-        stage('Build') {
-            options {
-                // Timeout counter starts BEFORE agent is allocated
-                timeout(time: 300, unit: 'SECONDS')
-            }
+        stage('Build with Kaniko') {
             steps {
-                sh '''
-                    docker compose -f dc-bot.yml build
-                '''
+                checkout scm
+                container(name: 'kaniko', shell: '/busybox/sh') {
+                    withCredentials([file(credentialsId: 'docker-credentials', variable: 'DOCKER_CONFIG_JSON')]) {
+                        withEnv(['PATH+EXTRA=/busybox']) {
+                            sh '''#!/busybox/sh
+                                cp $DOCKER_CONFIG_JSON /kaniko/.docker/config.json
+                                /kaniko/executor --context "." --dockerfile "./src/Dockerfile" --destination $IMAGE_PUSH_DESTINATION
+                            '''
+                        }
+                    }
+                }
             }
         }
     }

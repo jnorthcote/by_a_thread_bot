@@ -19,15 +19,14 @@ spec:
         }
     }
     stages {
-        stage('Example') {
+        stage('Build') {
             options {
                 // Timeout counter starts BEFORE agent is allocated
                 timeout(time: 300, unit: 'SECONDS')
             }
             steps {
-                echo 'Hello World'
                 sh '''
-                    docker -v
+                    docker compose -f dc-bot.yml build
                 '''
             }
         }

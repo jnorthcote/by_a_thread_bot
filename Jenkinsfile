@@ -9,7 +9,7 @@ kind: Pod
 spec:
   containers:
   - name: docker
-    image: docker:24.0.0-cli-alpine3.18
+    image: docker:24.0.0-dind-alpine3.18
     imagePullPolicy: Always
     command:
     - sleep

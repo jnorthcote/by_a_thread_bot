@@ -21,7 +21,7 @@ spec:
     }
     environment {
         PROJECT_ID="narmb-369710"
-        IMAGE_PUSH_DESTINATION="us-west1-docker.pkg.dev/${PROJECT_ID}/bat-bot/bat-bot-app:${BUILD_TAG}"
+        IMAGE_PUSH_DESTINATION="us-west1-docker.pkg.dev/${PROJECT_ID}/bat-bot/bat-bot-app:${BUILD_ID}"
     }
     stages {
         stage('Build with Kaniko') {

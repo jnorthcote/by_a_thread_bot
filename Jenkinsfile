@@ -19,8 +19,8 @@ spec:
     volumeMounts:
     - mountPath: /kaniko-cache
       name: kaniko-cache
-  - name: cloud-sdk
-    image: google/cloud-sdk:alpine
+  - name: k8s
+    image: docker pull alpine/k8s:1.24.13
     imagePullPolicy: Always
     command:
       - sleep
@@ -57,7 +57,7 @@ spec:
         }
         stage('Deploy') {
             steps {
-                container(name: 'cloud-sdk', shell: '/bin/sh') {
+                container(name: 'k8s', shell: '/bin/sh') {
                     withCredentials([file(credentialsId: 'bat-bot-token', variable: 'KUBE_TOKEN')]) {
                         withEnv(['PATH+EXTRA=/busybox']) {
                             sh '''#!/bin/sh

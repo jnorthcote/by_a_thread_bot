@@ -46,12 +46,25 @@ spec:
                         withEnv(['PATH+EXTRA=/busybox']) {
                             sh '''#!/busybox/sh
                                 cp $DOCKER_CONFIG_JSON /kaniko/.docker/config.json
-                                echo "$IMAGE_PUSH_DESTINATION"
-                                /kaniko/executor --help
+                                echo "Image artifact destination: $IMAGE_PUSH_DESTINATION"
+                                // /kaniko/executor --help
                                 /kaniko/executor --cache=true --cache-dir=/kaniko-cache --context "." --dockerfile "./src/Dockerfile" --destination "$IMAGE_PUSH_DESTINATION"
                             '''
                         }
                     }
+                }
+            }
+        }
+        stage('Auth') {
+            steps {
+                container(name: 'cloud-sdk', shell: '/bin/sh') {
+                    // withCredentials([file(credentialsId: 'bat-bot-token', variable: 'KUBE_TOKEN')]) {
+                        // withEnv(['PATH+EXTRA=/busybox']) {
+                            sh '''#!/bin/sh
+                                gcloud container clusters get-credentials nova-ocr-bot-cluster --region us-west1
+                            '''
+                        // }
+                    // }
                 }
             }
         }
@@ -61,9 +74,11 @@ spec:
                     // withCredentials([file(credentialsId: 'bat-bot-token', variable: 'KUBE_TOKEN')]) {
                         // withEnv(['PATH+EXTRA=/busybox']) {
                             sh '''#!/bin/sh
-                                gcloud container clusters get-credentials nova-ocr-bot-cluster --region us-west1
-                                kubectl -n bat-bot get deployment/by-a-thread-bot-deployment -o json
+                                echo 'Current Deployment Image'
+                                kubectl -n bat-bot get deployment/by-a-thread-bot-deployment -o wide
                                 kubectl -n bat-bot set image deployment/by-a-thread-bot-deployment by-a-thread-bot=$IMAGE_PUSH_DESTINATION
+                                echo 'Updated Deployment Image'
+                                kubectl -n bat-bot get deployment/by-a-thread-bot-deployment -o wide
                             '''
                         // }
                     // }

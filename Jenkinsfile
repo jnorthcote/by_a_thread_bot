@@ -62,7 +62,7 @@ spec:
                 }
             }
         }
-        stage('Deploy') {
+        stage('GCloud') {
             steps {
                 container(name: 'cloud-sdk', shell: '/bin/sh') {
                     // withCredentials([file(credentialsId: 'bat-bot-token', variable: 'KUBE_TOKEN')]) {

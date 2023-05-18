@@ -20,7 +20,7 @@ spec:
     - mountPath: /kaniko-cache
       name: kaniko-cache
   - name: cloud-sdk
-    image: us-west1-docker.pkg.dev/${PROJECT_ID}/cicd-scars/cloud-sdk:alpine-kubectl
+    image: us-west1-docker.pkg.dev/narmb-369710/cicd-scars/cloud-sdk:alpine-kubectl
     imagePullPolicy: Always
     command:
       - sleep

@@ -40,7 +40,8 @@ spec:
                             sh '''#!/busybox/sh
                                 cp $DOCKER_CONFIG_JSON /kaniko/.docker/config.json
                                 echo "$IMAGE_PUSH_DESTINATION"
-                                /kaniko/executor --cache true --cache-dir /kaniko-cache --context "." --dockerfile "./src/Dockerfile" --destination "$IMAGE_PUSH_DESTINATION"
+                                /kaniko/executor --help
+                                /kaniko/executor --cache=true --cache-dir=/kaniko-cache --context "." --dockerfile "./src/Dockerfile" --destination "$IMAGE_PUSH_DESTINATION"
                             '''
                         }
                     }

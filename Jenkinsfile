@@ -19,6 +19,13 @@ spec:
     volumeMounts:
     - mountPath: /kaniko-cache
       name: kaniko-cache
+  - name: cloud-sdk
+    image: google/cloud-sdk:alpine
+    imagePullPolicy: Always
+    command:
+      - sleep
+      - "36000"
+    tty: true
   volumes:
   - name: kaniko-cache
     persistentVolumeClaim:
@@ -50,10 +57,10 @@ spec:
         }
         stage('Deploy') {
             steps {
-                container(name: 'kaniko', shell: '/busybox/sh') {
+                container(name: 'cloud-sdk', shell: '/bin/sh') {
                     withCredentials([file(credentialsId: 'bat-bot-token', variable: 'KUBE_TOKEN')]) {
                         withEnv(['PATH+EXTRA=/busybox']) {
-                            sh '''#!/busybox/sh
+                            sh '''#!/bin/sh
                                 #kubectl -n bat-bot --token KUBE_TOKEN set image deployment/by-a-thread-bot-deployment by-a-thread-bot=$IMAGE_PUSH_DESTINATION
                                 kubectl -n bat-bot get deployment/by-a-thread-bot-deployment -o json
                             '''

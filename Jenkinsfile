@@ -8,13 +8,9 @@ pipeline {
 kind: Pod
 spec:
   containers:
-  - name: kaniko
-    image: gcr.io/kaniko-project/executor:debug
+  - name: docker
+    image: docker:24.0.0-cli-alpine3.18
     imagePullPolicy: Always
-    command:
-    - sleep
-    args:
-    - 99d
 '''
         }
     }

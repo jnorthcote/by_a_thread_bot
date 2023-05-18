@@ -23,7 +23,6 @@ spec:
   - name: kaniko-cache
     persistentVolumeClaim:
       claimName: kaniko-cache-claim
-  persistentVolumeClaim
 '''
         }
     }

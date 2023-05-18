@@ -20,7 +20,7 @@ spec:
     - mountPath: /kaniko-cache
       name: kaniko-cache
   - name: k8s
-    image: docker pull alpine/k8s:1.24.13
+    image: alpine/k8s:1.24.13
     imagePullPolicy: Always
     command:
       - sleep

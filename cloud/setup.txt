@@ -28,11 +28,35 @@ gcloud projects add-iam-policy-binding --member serviceAccount:$SA_EMAIL \
 
 gcloud projects get-iam-policy $PROJECT
 
-gcloud iam roles create JenkinsCD --project=$PROJECT --file=roles.yml
+gcloud iam roles create JenkinsCD --project=$PROJECT --description=jenkins --permissions=container.deployments.create,container.deployments.delete,container.deployments.get,container.deployments.getScale,container.deployments.getStatus,container.deployments.list,container.deployments.rollback,container.deployments.update,container.deployments.updateScale,container.deployments.updateStatus
 
+gcloud projects add-iam-policy-binding --member serviceAccount:$SA_EMAIL \
+ --role projects/narmb-369710/roles/JenkinsCD $PROJECT
 
-gcloud iam list-testable-permissions //cloudresourcemanager.googleapis.com/projects/narmb-369710 \
-    --filter="customRolesSupportLevel!=NOT_SUPPORTED && apiDisabled!=true"
+gcloud container clusters get-credentials nova-ocr-bot-cluster --region $REGION
+
+TOKENNAME=`kubectl -n bat-bot get serviceaccount/bot-bat-sa -o jsonpath='{.secrets[0].name}'`
+
+kubectl -n bat-bot get serviceaccount/bat-bot-sa
+
+$ export SECRET_NAME_SA=`kubectl get sa my-sa-test -n test-ns -ojsonpath="{ .secrets[0].name }"`
+$ export TOKEN_SA=`kubectl get secret $SECRET_NAME_SA -n test-ns -ojsonpath='{.data.token}' | base64 -d`
+
+export SECRET_NAME_SA=bat-bot-sa
+export TOKEN_SA=eyJhbGciOiJSUzI1NiIsImtpZCI6IkZMbWhoWVdNbFlRaDRwVnpxenEtMUZvMzNrWTRnZ0tTZHEzZmdQdUZWNTgifQ.eyJhdWQiOlsiaHR0cHM6Ly9jb250YWluZXIuZ29vZ2xlYXBpcy5jb20vdjEvcHJvamVjdHMvbmFybWItMzY5NzEwL2xvY2F0aW9ucy91cy13ZXN0MS9jbHVzdGVycy9ub3ZhLW9jci1ib3QtY2x1c3RlciJdLCJleHAiOjE2ODQ0MTYwOTQsImlhdCI6MTY4NDQxMjQ5NCwiaXNzIjoiaHR0cHM6Ly9jb250YWluZXIuZ29vZ2xlYXBpcy5jb20vdjEvcHJvamVjdHMvbmFybWItMzY5NzEwL2xvY2F0aW9ucy91cy13ZXN0MS9jbHVzdGVycy9ub3ZhLW9jci1ib3QtY2x1c3RlciIsImt1YmVybmV0ZXMuaW8iOnsibmFtZXNwYWNlIjoiYmF0LWJvdCIsInNlcnZpY2VhY2NvdW50Ijp7Im5hbWUiOiJiYXQtYm90LXNhIiwidWlkIjoiYThhOWUyMDAtMzRiNi00NTljLThiMmMtYTMyMTJhODkzNGIzIn19LCJuYmYiOjE2ODQ0MTI0OTQsInN1YiI6InN5c3RlbTpzZXJ2aWNlYWNjb3VudDpiYXQtYm90OmJhdC1ib3Qtc2EifQ.yuyFUCzMaY1xEUSBIXnuVN98XlRvNJ6YEnZQSijb712p4QQYJC89lUFTyZiSuFOW-wlLO0UUifjW-M8iTLB8BmlA9l4lznlACxQYvm-F3WH0QZI8II9olOcRdAS75PyytnxFVmx2KpA8pmC9locHr0wcuc3Y6JmNbdeKhoyVCKcdYtas9r5CqjFx4Eez_vHbt5CHgP8sNsbDPdE0bXCS_5ccV1eBJidmTF45v_s41Qin8O4hC5zHg6DiRw0UubwJa7e7KYWYTzktX8ERxQxvruswa5kX18paRU4JfxyUjq0lgaKoGKYPx0T3i8QC2rkx7lEE8xvWFex1-CGkVYGXeg
+
+kubectl config view --raw --minify > kubeconfig.txt
+kubectl config unset users --kubeconfig=kubeconfig.txt
+kubectl config set-credentials ${SECRET_NAME_SA} --kubeconfig=kubeconfig.txt --token=${TOKEN_SA}
+kubectl config set-context --current --kubeconfig=kubeconfig.txt --user=${SECRET_NAME_SA}
+
+kubectl --token=${TOKEN_SA} -n bat-bot get deployments
+
+kubectl -n bat-bot describe secret bot-bat-sa-token
+
+gcloud iam list-testable-permissions //cloudresourcemanager.googleapis.com/projects/narmb-369710 --filter="customRolesSupportLevel!=NOT_SUPPORTED"
+
+gcloud iam list-testable-permissions //cloudresourcemanager.googleapis.com/projects/narmb-369710 --filter="apiDisabled=false"
 
 
   git config --global user.email "jason.northcote@gmail.com"

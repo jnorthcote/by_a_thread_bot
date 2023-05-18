@@ -3,7 +3,7 @@ pipeline {
     //agent { label 'jenkins=slave' }
     agent {
         kubernetes {
-            defaultContainer 'kaniko'
+            defaultContainer 'docker'
             yaml '''
 kind: Pod
 spec:
@@ -11,6 +11,10 @@ spec:
   - name: docker
     image: docker:24.0.0-cli-alpine3.18
     imagePullPolicy: Always
+    command:
+    - sleep
+    args:
+    - 99d
 '''
         }
     }

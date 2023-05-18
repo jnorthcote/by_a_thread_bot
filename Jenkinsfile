@@ -16,6 +16,14 @@ spec:
     command:
     - /busybox/cat
     tty: true
+    volumeMounts:
+    - mountPath: /kaniko-cache
+      name: kaniko-cache
+  volumes:
+  - name: kaniko-cache
+    persistentVolumeClaim:
+      claimName: kaniko-cache-claim
+  persistentVolumeClaim
 '''
         }
     }
@@ -33,7 +41,7 @@ spec:
                             sh '''#!/busybox/sh
                                 cp $DOCKER_CONFIG_JSON /kaniko/.docker/config.json
                                 echo "$IMAGE_PUSH_DESTINATION"
-                                /kaniko/executor --context "." --dockerfile "./src/Dockerfile" --destination "$IMAGE_PUSH_DESTINATION"
+                                /kaniko/executor --cache true --cache-dir /kaniko-cache --context "." --dockerfile "./src/Dockerfile" --destination "$IMAGE_PUSH_DESTINATION"
                             '''
                         }
                     }

@@ -20,14 +20,7 @@ spec:
     - mountPath: /kaniko-cache
       name: kaniko-cache
   - name: cloud-sdk
-    image: google/cloud-sdk:alpine
-    imagePullPolicy: Always
-    command:
-      - sleep
-      - "36000"
-    tty: true
-  - name: k8s
-    image: alpine/k8s:1.24.13
+    image: us-west1-docker.pkg.dev/${PROJECT_ID}/cicd-scars/cloud-sdk:alpine-kubectl
     imagePullPolicy: Always
     command:
       - sleep
@@ -62,32 +55,33 @@ spec:
                 }
             }
         }
-        stage('GCloud') {
+        stage('Deploy') {
             steps {
                 container(name: 'cloud-sdk', shell: '/bin/sh') {
                     // withCredentials([file(credentialsId: 'bat-bot-token', variable: 'KUBE_TOKEN')]) {
                         // withEnv(['PATH+EXTRA=/busybox']) {
                             sh '''#!/bin/sh
                                 gcloud container clusters get-credentials nova-ocr-bot-cluster --region us-west1
+                                kubectl -n bat-bot get deployment/by-a-thread-bot-deployment -o json
                             '''
                         // }
                     // }
                 }
             }
         }
-        stage('Deploy') {
-            steps {
-                container(name: 'k8s', shell: '/bin/sh') {
-                    withCredentials([file(credentialsId: 'bat-bot-token', variable: 'KUBE_TOKEN')]) {
-                        withEnv(['PATH+EXTRA=/busybox']) {
-                            sh '''#!/bin/sh
-                                #kubectl -n bat-bot --token KUBE_TOKEN set image deployment/by-a-thread-bot-deployment by-a-thread-bot=$IMAGE_PUSH_DESTINATION
-                                kubectl -n bat-bot get deployment/by-a-thread-bot-deployment -o json
-                            '''
-                        }
-                    }
-                }
-            }
-        }
+        // stage('Deploy') {
+        //     steps {
+        //         container(name: 'k8s', shell: '/bin/sh') {
+        //             withCredentials([file(credentialsId: 'bat-bot-token', variable: 'KUBE_TOKEN')]) {
+        //                 withEnv(['PATH+EXTRA=/busybox']) {
+        //                     sh '''#!/bin/sh
+        //                         #kubectl -n bat-bot --token KUBE_TOKEN set image deployment/by-a-thread-bot-deployment by-a-thread-bot=$IMAGE_PUSH_DESTINATION
+        //                         kubectl -n bat-bot get deployment/by-a-thread-bot-deployment -o json
+        //                     '''
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
     }
 }

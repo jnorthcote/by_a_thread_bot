@@ -32,7 +32,8 @@ spec:
                         withEnv(['PATH+EXTRA=/busybox']) {
                             sh '''#!/busybox/sh
                                 cp $DOCKER_CONFIG_JSON /kaniko/.docker/config.json
-                                /kaniko/executor --context "." --dockerfile "./src/Dockerfile" --destination $IMAGE_PUSH_DESTINATION
+                                echo "$IMAGE_PUSH_DESTINATION"
+                                /kaniko/executor --context "." --dockerfile "./src/Dockerfile" --destination "$IMAGE_PUSH_DESTINATION"
                             '''
                         }
                     }

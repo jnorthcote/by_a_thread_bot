@@ -26,6 +26,7 @@ spec:
             }
             steps {
                 echo 'Hello World'
+                docker -v
             }
         }
     }

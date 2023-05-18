@@ -19,6 +19,13 @@ spec:
     volumeMounts:
     - mountPath: /kaniko-cache
       name: kaniko-cache
+  - name: cloud-sdk
+    image: google/cloud-sdk:alpine
+    imagePullPolicy: Always
+    command:
+      - sleep
+      - "36000"
+    tty: true
   - name: k8s
     image: alpine/k8s:1.24.13
     imagePullPolicy: Always
@@ -52,6 +59,19 @@ spec:
                             '''
                         }
                     }
+                }
+            }
+        }
+        stage('Deploy') {
+            steps {
+                container(name: 'cloud-sdk', shell: '/bin/sh') {
+                    // withCredentials([file(credentialsId: 'bat-bot-token', variable: 'KUBE_TOKEN')]) {
+                        // withEnv(['PATH+EXTRA=/busybox']) {
+                            sh '''#!/bin/sh
+                                gcloud container clusters get-credentials nova-ocr-bot-cluster --region us-west2-a
+                            '''
+                        // }
+                    // }
                 }
             }
         }

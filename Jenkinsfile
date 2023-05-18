@@ -26,7 +26,7 @@ spec:
     stages {
         stage('Build with Kaniko') {
             steps {
-                checkout scm
+                //checkout scm
                 container(name: 'kaniko', shell: '/busybox/sh') {
                     withCredentials([file(credentialsId: 'docker-credentials', variable: 'DOCKER_CONFIG_JSON')]) {
                         withEnv(['PATH+EXTRA=/busybox']) {
@@ -34,6 +34,19 @@ spec:
                                 cp $DOCKER_CONFIG_JSON /kaniko/.docker/config.json
                                 echo "$IMAGE_PUSH_DESTINATION"
                                 /kaniko/executor --context "." --dockerfile "./src/Dockerfile" --destination "$IMAGE_PUSH_DESTINATION"
+                            '''
+                        }
+                    }
+                }
+            }
+        }
+        stage('Deploy') {
+            steps {
+                container(name: 'kaniko', shell: '/busybox/sh') {
+                    withCredentials([file(credentialsId: 'bat-bot-token', variable: 'KUBE_TOKEN')]) {
+                        withEnv(['PATH+EXTRA=/busybox']) {
+                            sh '''#!/busybox/sh
+                                kubectl -n bat-bot --token KUBE_TOKEN set image deployment/by-a-thread-bot-deployment by-a-thread-bot=$IMAGE_PUSH_DESTINATION
                             '''
                         }
                     }

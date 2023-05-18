@@ -68,7 +68,7 @@ spec:
                     // withCredentials([file(credentialsId: 'bat-bot-token', variable: 'KUBE_TOKEN')]) {
                         // withEnv(['PATH+EXTRA=/busybox']) {
                             sh '''#!/bin/sh
-                                gcloud container clusters get-credentials nova-ocr-bot-cluster --region us-west2-a
+                                gcloud container clusters get-credentials nova-ocr-bot-cluster --region us-west1
                             '''
                         // }
                     // }

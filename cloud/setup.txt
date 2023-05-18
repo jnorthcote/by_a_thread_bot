@@ -1,3 +1,40 @@
+Role  Description
+Artifact Registry Reader
+(roles/artifactregistry.reader)  View and get artifacts, view repository metadata.
+Artifact Registry Writer
+(roles/artifactregistry.writer)  Read and write artifacts.
+Artifact Registry Repository Administrator
+(roles/artifactregistry.repoAdmin)  Read, write, and delete artifacts.
+Artifact Registry Administrator
+(roles/artifactregistry.admin)   Create and manage repositories and artifacts.
+
+export PROJECT_ID=narmb-369710
+export PROJECT=$PROJECT_ID
+
+gcloud iam service-accounts create jenkins-sa-push
+
+export SA_EMAIL=$(gcloud iam service-accounts list --filter="name:jenkins-sa-push" \
+ --format='value(email)')
+ echo SA_EMAIL $SA_EMAIL
+
+gcloud projects add-iam-policy-binding --member serviceAccount:$SA_EMAIL \
+ --role roles/artifactregistry.reader $PROJECT
+
+gcloud projects add-iam-policy-binding --member serviceAccount:$SA_EMAIL \
+ --role roles/artifactregistry.writer $PROJECT
+
+gcloud projects add-iam-policy-binding --member serviceAccount:$SA_EMAIL \
+ --role roles/iam.serviceAccountUser $PROJECT
+
+gcloud projects get-iam-policy $PROJECT
+
+gcloud iam roles create JenkinsCD --project=$PROJECT --file=roles.yml
+
+
+gcloud iam list-testable-permissions //cloudresourcemanager.googleapis.com/projects/narmb-369710 \
+    --filter="customRolesSupportLevel!=NOT_SUPPORTED && apiDisabled!=true"
+
+
   git config --global user.email "jason.northcote@gmail.com"
   git config --global user.name "Jason Northcote"
 
@@ -11,7 +48,7 @@ echo $PROJECT_ID
 
 export BOT_TOKEN=ZGlzY29yZC1zZWNyZXQudHh0
 kubectl apply -f secrets.yml
-envsubst < secrets.yaml | kubectl apply -f -
+envsubst < secrets.yml | kubectl apply -f -
 
 envsubst < bot-deployment.yml | kubectl apply -f -
 
@@ -24,6 +61,10 @@ gcloud artifacts repositories create nova-ocr-bot \
    --description="Docker repository for bot artifacts"
 
 
+gcloud artifacts repositories create bat-bot \
+   --repository-format=docker \
+   --location=us-west1 \
+   --description="Docker repository for bot artifacts"
 
    He@thLedg3r
    git clone https://github.com/jnorthcote/ocr-bot-discord.git
@@ -35,15 +76,18 @@ docker-compose -f dc-bot.yml build && docker-compose -f dc-bot.yml up -d && dock
 
 docker compose -f dc-bot.yml build .
 
-gcloud artifacts repositories add-iam-policy-binding nova-ocr-bot \
+gcloud artifacts repositories add-iam-policy-binding bat-bot \
     --location=us-west1 \
     --member=serviceAccount:40165470279-compute@developer.gserviceaccount.com \
     --role="roles/artifactregistry.reader"
 
 gcloud auth configure-docker us-west1-docker.pkg.dev
 
+cat narmb-369710-a324ab891874.json | docker login -u _json_key --password-stdin \
+https://us-west1-docker.pkg.dev
 
 docker push us-west1-docker.pkg.dev/${PROJECT_ID}/nova-ocr-bot/nova-ocr-app:v1
+docker push us-west1-docker.pkg.dev/${PROJECT_ID}/bat-bot/bat-bot-app:v1
 
 
 gcloud config set compute/region $REGION

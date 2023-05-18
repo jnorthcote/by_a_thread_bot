@@ -46,7 +46,8 @@ spec:
                     withCredentials([file(credentialsId: 'bat-bot-token', variable: 'KUBE_TOKEN')]) {
                         withEnv(['PATH+EXTRA=/busybox']) {
                             sh '''#!/busybox/sh
-                                kubectl -n bat-bot --token KUBE_TOKEN set image deployment/by-a-thread-bot-deployment by-a-thread-bot=$IMAGE_PUSH_DESTINATION
+                                #kubectl -n bat-bot --token KUBE_TOKEN set image deployment/by-a-thread-bot-deployment by-a-thread-bot=$IMAGE_PUSH_DESTINATION
+                                kubectl -n bat-bot get deployment/by-a-thread-bot-deployment -o json
                             '''
                         }
                     }
